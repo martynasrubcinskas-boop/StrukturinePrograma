@@ -2,106 +2,93 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-
 using namespace std;
 
-const int MAX_ITEMS = 20;
-const double TAX = 0.21;
+void bilietai() {
 
-struct menuItemType {
-    string menuItem;
-    double menuPrice;
-};
+    double kaina;
+    double parduota_bilietu;
+    double isparduota = 0;
+    double bendra_suma = 0;
 
-int getData(menuItemType menu[]);
-void showMenu(menuItemType menu[], int n);
-void printCheck(menuItemType menu[], int n, int qty[]);
+    ifstream tickets;
+    tickets.open("Tickets.txt");
 
-int main() {
-    menuItemType menu[MAX_ITEMS];
-    int qty[MAX_ITEMS] = {0};
+    string bilietai;
+    getline(tickets, bilietai);
 
-    int count = getData(menu);
-
-    if (count == 0) {
-        cout << "Klaida: menu.txt neatrastas\n";
-        return 1;
+    for (int i = 1; i <= 4; i++) {
+        tickets >> kaina >> parduota_bilietu;
+        bendra_suma += kaina * parduota_bilietu;
+        isparduota += parduota_bilietu;
     }
+    tickets.close();
 
-    showMenu(menu, count);
-
-    cout << "\nIveskite kieki (0 jeigu nereikia):\n";
-    for (int i = 0; i < count; i++) {
-        cout << menu[i].menuItem << ": ";
-        cin >> qty[i];
-    }
-
-    printCheck(menu, count, qty);
-    return 0;
-}
-
-int getData(menuItemType menu[]) {
-    ifstream file("menu.txt");
-    if (!file) return 0;
-
-    int i = 0;
-    string line;
-
-    while (getline(file, line) && i < MAX_ITEMS) {
-        int pos = line.find_last_of(' ');
-        if (pos == string::npos) continue;
-
-        menu[i].menuItem = line.substr(0, pos);
-        menu[i].menuPrice = stod(line.substr(pos + 1));
-        i++;
-    }
-
-    file.close();
-    return i;
-}
-
-void showMenu(menuItemType menu[], int n) {
-    cout << "\nSveiki atvyke i Prancuziska Restorana\n\n";
-    cout << fixed << setprecision(2);
-
-    for (int i = 0; i < n; i++) {
-        cout << setw(2) << i + 1 << ". "
-             << setw(20) << left << menu[i].menuItem
-             << menu[i].menuPrice << " EUR\n";
-    }
-}
-
-void printCheck(menuItemType menu[], int n, int qty[]) {
-    ofstream receipt("receipt.txt");
-    double sum = 0.0;
-
-    cout << "\n--- Saskaita ---\n";
-    receipt << "--- Saskaita ---\n";
-
-    for (int i = 0; i < n; i++) {
-        if (qty[i] > 0) {
-            double price = qty[i] * menu[i].menuPrice;
-            sum += price;
-
-            cout << qty[i] << " "
-                 << setw(20) << left << menu[i].menuItem
-                 << price << " EUR\n";
-
-            receipt << qty[i] << " "
-                    << setw(20) << left << menu[i].menuItem
-                    << price << " EUR\n";
+    while (true) {
+        char pasirink;
+        cout << "A. Apskaiciuoti bendra parduotu bilietu skaiciu" << endl;
+        cout << "B. Apskaiciuoti bendra pardavimu suma" << endl;
+        cout << "C - Iseiti is programos" << endl;
+        cin >> pasirink;
+        if (pasirink == 'A') {
+            cout << "Bendras Parduotu Bilietu skaicius: " << isparduota << endl;
+        }  else if (pasirink == 'B') {
+            cout<<fixed<<setprecision(2)<<"Bendra pardavimu suma: "<< bendra_suma <<" EUR "<<endl;
+        } else if (pasirink == 'C') {
+            break;
         }
     }
-
-    double tax = sum * TAX;
-    double total = sum + tax;
-
-    cout << "\nPVM (21%): " << tax << " EUR\n";
-    cout << "Suma: " << total << " EUR\n";
-
-    receipt << "\nPVM (21%): " << tax << " EUR\n";
-    receipt << "Suma: " << total << " EUR\n";
-
-    receipt.close();
 }
 
+void atlyginimai() {
+    int kiek = 3;
+    string pavarde[kiek], vardas[kiek];
+    double atlyginimas[kiek], padidejimo_procentas[kiek];
+
+    ifstream salary("Salary.txt");
+    if (!salary) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+
+    string atlygis;
+    getline(salary, atlygis);
+
+    int s = 0;
+    while (s < kiek) {
+        salary >> pavarde[s] >> vardas[s] >> atlyginimas[s] >> padidejimo_procentas[s];
+        s++;
+    }
+    salary.close();
+
+    char pasirink2;
+    cout << "D - atnaujinti darbuotojam atlyginimus" << endl;
+    cin >> pasirink2;
+
+    if (pasirink2 == 'D') {
+        cout <<"Pavarde  Vardas  Esamas atlyginimas (USD) Naujas atlyginimas (USD)" << endl;
+        s = 0;
+        while (s < kiek) {
+            double naujas_atlyginimas = atlyginimas[s] + atlyginimas[s] * padidejimo_procentas[s] / 100;
+            cout <<pavarde[s]<<"\t "<<vardas[s]<<"\t "
+            <<atlyginimas[s]<< "\t\t  " <<naujas_atlyginimas<<endl;
+            s++;
+        }
+    }
+}
+
+
+int main() {
+    string pasirinkimas;
+    cout << "Pirmas - Norite apskaiciuoti koncerto bilietu pardavimo suma" << endl;
+    cout << "Antras - Norite atnaujinti darbuotoju atlyginimus pagal padidejimo procenta" << endl;
+    cin >> pasirinkimas;
+    if (pasirinkimas == "Pirmas") {
+        cout << "Koncerto bilietu kainos ir parduoti bilietai: " << endl;
+        bilietai();
+    } else if (pasirinkimas == "Antras") {
+        cout << "Darbuotoju esami atlyginimai ir atnaujinti atlyginimai" << endl;
+        atlyginimai();
+    }
+    return 0;
+}
