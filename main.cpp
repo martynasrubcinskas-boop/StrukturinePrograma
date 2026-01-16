@@ -1,94 +1,101 @@
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
+#include  <iostream>
 using namespace std;
 
-void bilietai() {
-
-    double kaina;
-    double parduota_bilietu;
-    double isparduota = 0;
-    double bendra_suma = 0;
-
-    ifstream tickets;
-    tickets.open("Tickets.txt");
-
-    string bilietai;
-    getline(tickets, bilietai);
-
-    for (int i = 1; i <= 4; i++) {
-        tickets >> kaina >> parduota_bilietu;
-        bendra_suma += kaina * parduota_bilietu;
-        isparduota += parduota_bilietu;
-    }
-    tickets.close();
-
-    while (true) {
-        char pasirink;
-        cout << "A. Apskaiciuoti bendra parduotu bilietu skaiciu" << endl;
-        cout << "B. Apskaiciuoti bendra pardavimu suma" << endl;
-        cout << "C - Iseiti is programos" << endl;
-        cin >> pasirink;
-        if (pasirink == 'A') {
-            cout << "Bendras Parduotu Bilietu skaicius: " << isparduota << endl;
-        }  else if (pasirink == 'B') {
-            cout<<fixed<<setprecision(2)<<"Bendra pardavimu suma: "<< bendra_suma <<" EUR "<<endl;
-        } else if (pasirink == 'C') {
-            break;
-        }
-    }
-}
-
-void atlyginimai() {
-    int kiek = 3;
-    string pavarde[kiek], vardas[kiek];
-    double atlyginimas[kiek], padidejimo_procentas[kiek];
-
-    ifstream salary("Salary.txt");
-    if (!salary) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-
-    string atlygis;
-    getline(salary, atlygis);
-
-    int s = 0;
-    while (s < kiek) {
-        salary >> pavarde[s] >> vardas[s] >> atlyginimas[s] >> padidejimo_procentas[s];
-        s++;
-    }
-    salary.close();
-
-    char pasirink2;
-    cout << "D - atnaujinti darbuotojam atlyginimus" << endl;
-    cin >> pasirink2;
-
-    if (pasirink2 == 'D') {
-        cout <<"Pavarde  Vardas  Esamas atlyginimas (USD) Naujas atlyginimas (USD)" << endl;
-        s = 0;
-        while (s < kiek) {
-            double naujas_atlyginimas = atlyginimas[s] + atlyginimas[s] * padidejimo_procentas[s] / 100;
-            cout <<pavarde[s]<<"\t "<<vardas[s]<<"\t "
-            <<atlyginimas[s]<< "\t\t  " <<naujas_atlyginimas<<endl;
-            s++;
-        }
-    }
-}
-
-
+// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    string pasirinkimas;
-    cout << "Pirmas - Norite apskaiciuoti koncerto bilietu pardavimo suma" << endl;
-    cout << "Antras - Norite atnaujinti darbuotoju atlyginimus pagal padidejimo procenta" << endl;
-    cin >> pasirinkimas;
-    if (pasirinkimas == "Pirmas") {
-        cout << "Koncerto bilietu kainos ir parduoti bilietai: " << endl;
-        bilietai();
-    } else if (pasirinkimas == "Antras") {
-        cout << "Darbuotoju esami atlyginimai ir atnaujinti atlyginimai" << endl;
-        atlyginimai();
+    char valiuta;
+    char veiksmas;
+    double rezultatas, suma;
+
+    // Įvedimas
+    cout << "Pasirinkite valiuta (G - GBP, U - USD, I - INR): ";
+    cin >> valiuta;
+
+    cout << "Pasirinkite veiksma (P - Pirkti, D - Parduoti): ";
+    cin >> veiksmas;
+
+    cout << "Iveskite suma EUR: " << endl;
+    cin >> suma;
+
+    double GBP_Bendras   = 0.8729;
+    double GBP_Pirkti    = 0.8600;
+    double GBP_Parduoti  = 0.9220;
+    double USD_Bendras   = 1.1793;
+    double USD_Pirkti    = 1.1460;
+    double USD_Parduoti  = 1.2340;
+    double INR_Bendras   = 104.6918;
+    double INR_Pirkti    = 101.3862;
+    double INR_Parduoti  = 107.8546;
+
+
+    if (valiuta == 'G' || valiuta == 'g') {
+       if (veiksmas == 'P' || veiksmas == 'p') {
+        // EUR -> GBP (pirkimo kursas)
+        rezultatas = suma * GBP_Pirkti;
+        cout << "Gaunate " << rezultatas << " GBP" << endl;
+  } else if (veiksmas == 'D' || veiksmas == 'd') {
+        // EUR -> GBP (pardavimo kursas)
+        rezultatas = suma / GBP_Parduoti;
+        cout << "Gaunate " << rezultatas << " EUR" << endl;
+    } else {
+        cout << "Neteisingas veiksmas." << endl;
     }
-    return 0;
+  } else if (valiuta == 'U' || valiuta == 'u') {
+    if (veiksmas == 'P' || veiksmas == 'p') {
+        // EUR -> USD (pirkimo kursas)
+        rezultatas = suma * USD_Pirkti ;
+        cout << "Gaunate " << rezultatas << " USD" << endl;
+  } else if (veiksmas == 'D' || veiksmas == 'd') {
+        // EUR -> USD (pardavimo kursas)
+        rezultatas = suma / USD_Parduoti;
+        cout << "Gaunate " << rezultatas << " USD" << endl;
+    } else {
+        cout << "Neteisingas veiksmas." << endl;
+    }
+  }
+    else if (valiuta == 'I' || valiuta == 'i') {
+    if (veiksmas == 'P' || veiksmas == 'p') {
+        // EUR -> INR (pirkimo kursas)
+        rezultatas = suma * INR_Pirkti;
+        cout << "Gaunate " << rezultatas << " INR" << endl;
+    } else if (veiksmas == 'D' || veiksmas == 'd') {
+        // EUR -> INR (pardavimo kursas)
+        rezultatas = suma / INR_Parduoti;
+        cout << "Gaunate " << rezultatas << " INR" << endl;
+    } else {
+        cout << "Neteisingas veiksmas." << endl;
+    }
+  }
+      else {
+       cout << "Neteisinga valiuta." << endl;
+
+      }
+
+    for (int i = 1; i <= 3; i++) {
+        string valiuta;
+        double kiekis = 0.0;
+
+        // Priskiriame kursą ir valiutos pavadinimą pagal ciklo numerį
+        if (i == 1) {
+            cout << "Valiutos palyginimas su euru (1 EUR = X valiutos):\n";
+            valiuta = "GBP";
+            kiekis = 0.8729;
+        }
+        else if (i == 2) {
+            cout << "Valiutos palyginimas su euru (1 EUR = X valiutos):\n";
+            valiuta = "USD";
+            kiekis = 1.1793;
+        }
+        else if (i == 3) {
+            cout << "Valiutos palyginimas su euru (1 EUR = X valiutos):\n";
+            valiuta = "INR";
+            kiekis = 104.6918;
+        }
+
+        cout << "1 EUR = " << kiekis << " " << valiuta << endl;
+    }
+
+      return 0;
+
 }
+    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu
